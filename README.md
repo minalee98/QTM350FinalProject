@@ -68,7 +68,6 @@ import io
 df=pd.read_excel(io.BytesIO(uploaded['FinalProjData.xlsx']))
 
 # Check if the data is there
-df
 
 Now that we know that our data has been successfully loaded into the environment, we can start our analysis.
 
