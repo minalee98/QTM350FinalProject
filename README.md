@@ -58,17 +58,23 @@ Hello, Everyone. This notebook will be walking you step-by-step through our fina
 Before we can start the analysis, we need to import the data into our environment. 
 
 # Import Pandas package for later use
+```
 import pandas as pd
+```
 
 # Import the data
+```
 from google.colab import files
 uploaded=files.upload()
-
+```
+```
 import io
 df=pd.read_excel(io.BytesIO(uploaded['FinalProjData.xlsx']))
-
+```
 # Check if the data is there
-
+```
+df
+```
 Now that we know that our data has been successfully loaded into the environment, we can start our analysis.
 
 ## Summary statistics
@@ -76,42 +82,52 @@ Now that we know that our data has been successfully loaded into the environment
 We want to get a better understanding of our data. To do so, we will find the average accuracy for the different Genres and for the different speeds.
 
 # Basic summary statistics
+```
 df.describe()
-
+```
 # Importing matplotlib package
+```
 import matplotlib.pyplot as plt
-
+```
 # Visualizing the distribution of Accuracy 
+```
 plt.hist(df['Accuracy'], bins = 25)
 plt.xlabel('Accuracy')
 plt.ylabel('Distribution Density')
 plt.title('Distribution of Accuracy Scores')
-
+```
 
 # Use pandas to find average accuracy by genre 
+```
 df_genre=df.groupby(['Genre'], as_index=False).mean()
 df_genre
-
+```
 # Visualizing the correlation between genre and accuracy
+```
 plt.bar(df_genre['Genre'], df_genre['Accuracy'])
 plt.xlabel('Genre')
 plt.ylabel('Average Accuracy (%)')
 plt.title('Genre vs. Average Accuracy')
-
+```
 # Use pandas to find average accuracy by speed
+```
 df_speed=df.groupby(['Speed'], as_index=False).mean()
 df_speed
+```
 
 # Visualizing the correlation between speed and accuracy
+```
 plt.bar(df_speed['Speed'], df_speed['Accuracy'])
 plt.xlabel('Speed')
 plt.ylabel('Average Accuracy (%)')
 plt.title('Speed vs. Average Accuracy')
+```
 
 # Use pandas to find average accuracy by genre and speed
+```
 df_both=df.groupby(['Speed', 'Genre'], as_index=False).mean()
 df_both
-
+```
 As shown from the tables above, the different genres and speeds definitely make a difference in how accurate Amazon Transcribe's transcription is. In order to know the magnitude of the effect, however, we will need to create a model a fit a linear regression on our data.
 
 ## The Linear Regression
@@ -121,14 +137,16 @@ Our model is very simple. We want to know just how much genre and speed effects 
 $Accuracy_{estimate} = B_0 + B_1*Genre + B_2*Speed + residual$
 
 # Import the package linregress from scipy.stats
+```
 import statsmodels.formula.api as smf
-
+```
 # Run the model
+```
 results = smf.ols('Accuracy ~ Speed+Genre', data=df).fit()
 results.params
 
 results.tvalues
-
+```
 ## The results 
 
 Our model has returned some interesting results. As seen above, songs displayed at the original speed are roughly 17.88% more accurate than those at half  speed (0.5x) and 16% more accurate than those at double speed (2.0x). We initally hypothesized that transcribe performance would be better at the half the original speed. This is because most songs have quite speedy tempo, which makes the system hard to pick up the lyrics. Hence, we believed that the slowed down audio would faciliate the transcription as the service might be able to pick up more lyrics than either from original or faster speed. 
